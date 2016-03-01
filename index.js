@@ -1,60 +1,26 @@
-var scraper = require('scraperjs').StaticScraper;
-var _ = require('lodash');
-var Promise = require("bluebird");
+var fs = require('fs-extra');
+var cfg = require('./lib/cfg'), paths = cfg.paths, http = cfg.http;
+var io = require('./lib/io');
 
-var urls = [
-	'https://twitter.com/BeebJournalist',
-	'https://twitter.com/_devbryce'
-];
-
-var selectors = {
-	name: '.ProfileHeaderCard-nameLink',
-	tweets: '.ProfileNav-item--tweets ProfileNav-value',
-	following: '.ProfileNav-item--following .ProfileNav-value',
-	followers: '.ProfileNav-item--followers .ProfileNav-value',
-	tweet_text: '.content .js-tweet-text-container .tweet-text'	
-};
-
-var formatters = {
-	
-};
-
-var promises = [];
-
-_.forEach(urls, function(url, idx){
-	console.log("Began looping through urls", url);
-	var promise = createScraper(url);
-	promises.push(promise);
-});
-
-
-Promise
-	.all(promises).then(function(data){
-		console.log(data);
-	})
-	.catch(function(err){
-		throw Error(err);
+var urls = fs.readJsonSync(paths.poynterSrcJson)
+	.map(function(handle){
+		return http.twitterBase + handle;
 	});
+	
+io.makeRequests(urls)
+	.then(function(data){
+		fs.writeJson(paths.poynterDistJson, data);
+		return data;
+	})
+	.then(function(data) {
+		io.writeXls(paths.poynterDistXls, data);
+		console.log('Done');
+	}).catch(function(err){ throw Error(err)});
 
-function createScraper(url) {
-	return scraper.create(url)
-		.scrape(function ($) {
-			console.log("Began parsing returned HTML");
-			var doc = $('#doc');
-			var values = {};
 
-			_.forIn(selectors, function (selector, key) {
-				console.log("Began getting text using selectors");
-				values[key] = doc.find(selector).text();
-				console.log("Stored value for " + key);
-			});
 
-			return values;
-		})
-		.catch(function(err){
-			throw Error(err);
-		});
-}
+
+
 
 
 

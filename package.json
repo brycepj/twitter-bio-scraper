@@ -10,6 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.3.3",
+    "fs-extra": "^0.26.5",
+    "jquery": "^2.2.1",
+    "line-by-line": "^0.1.4",
     "lodash": "^4.5.1",
     "scraperjs": "^1.2.0"
   }
