@@ -1,4 +1,5 @@
 require('./lib/globals');
+var _ = require('lodash');
 var fs = require('fs-extra');
 var cfg = require('./lib/cfg'), paths = cfg.paths, http = cfg.http;
 var io = require('./lib/io');
@@ -13,6 +14,7 @@ var bios = fs.readJsonSync(paths.poynterSrcJson)
 
 io.makeRequests(bios)
   .then(function (data) {
+    data = _.flatten(data);
     fs.writeJson(paths.poynterDistJson, data);
     console.log('JSON Written');
     return data;
@@ -22,7 +24,6 @@ io.makeRequests(bios)
     io.writeXls(paths.poynterDistXls, data);
     console.log('Done');
   }).catch(function (err) { throw Error(err) });
-
 
 
 
