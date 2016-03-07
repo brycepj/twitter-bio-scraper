@@ -4,24 +4,19 @@ var fs = require('fs-extra');
 var cfg = require('./lib/cfg'), paths = cfg.paths, http = cfg.http;
 var io = require('./lib/io');
 
-var bios = fs.readJsonSync(paths.poynterSrcJson)
-  .map(function (handle) {
-    return {
-      url: http.twitterBase + handle,
-      handle: handle
-    };
-  });
+var baseData = io.getData(); 
 
-io.makeRequests(bios)
+io.makeRequests(baseData)
   .then(function (data) {
+    console.log("All request responses received", data.length);
     data = _.flatten(data);
-    fs.writeJson(paths.poynterDistJson, data);
+    fs.writeJson(paths.sampleDistJson, data);
     console.log('JSON Written');
     return data;
   })
   .then(function (data) {
-    console.log("Attempting writeXls");
-    io.writeXls(paths.poynterDistXls, data);
+    console.log("Attempting to write xlxs");
+    io.writeXls(paths.sampleDistXls, data);
     console.log('Done');
   }).catch(function (err) { throw Error(err) });
 
