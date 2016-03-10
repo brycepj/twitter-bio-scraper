@@ -1,10 +1,11 @@
 require('./lib/globals');
 var _ = require('lodash');
 var fs = require('fs-extra');
-var cfg = require('./lib/cfg'), paths = cfg.paths, http = cfg.http;
+var cfg = require('./lib/cfg');
+var paths = cfg.paths, http = cfg.http;
 var io = require('./lib/io');
 
-var baseData = io.getData(); 
+var baseData = io.getData; 
 
 io.makeRequests(baseData)
   .then(function (data) {
